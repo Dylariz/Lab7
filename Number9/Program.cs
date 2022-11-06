@@ -1,4 +1,8 @@
-﻿namespace Number9
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+
+namespace Number9
 {
     /// <summary>
     /// Результаты соревнований фигуристов по одному из видов многоборья представлены оценками 7 судей в баллах (от 0,0 до 6,0).
@@ -10,7 +14,91 @@
     {
         public static void Main(string[] args)
         {
+            string[] sportmensSurnames =
+            {
+                "Рокоссовский",
+                "Пермяков",
+                "Горемыкин",
+                "Степанков",
+                "Чиграков",
+                "Чукчов",
+                "Моренов",
+                "Черняков",
+                "Сусоев",
+                "Львов",
+                "Боголюбов",
+                "Трусов",
+                "Денисов",
+                "Любов",
+                "Куклачёв",
+                "Кораблин",
+                "Шульга",
+                "Изюмов",
+                "Дёмин",
+                "Сутулин"
+            };
+
+            Sportsman[] sportsmens = new Sportsman[sportmensSurnames.Length];
+            for (int i = 0; i < sportsmens.Length; i++)
+            {
+                sportsmens[i] = new Sportsman(sportmensSurnames[i]);
+                Thread.Sleep(10);
+            }
+
+            List<Judge> judges = new List<Judge>();
+            for (int i = 0; i < 7; i++)
+            {
+                judges.Add(new Judge(ref sportsmens));
+            }
             
+            Array.Sort(sportsmens, (x, y) => y.TotalScore.CompareTo(x.TotalScore));
+            int place = 1;
+            foreach (var t in sportsmens)
+            {
+                Console.WriteLine($"{place++}: {t.Surname} - {Math.Round(t.TotalScore, 2)}");
+            }
+        }
+    }
+
+    public class Sportsman
+    {
+        private static int idContainer = 0;
+        public int Id { get; }
+        public string Surname { get; }
+        public double TotalScore { get; private set; }
+
+        public Sportsman(string surname)
+        {
+            Id = idContainer++;
+            Surname = surname;
+            TotalScore = 0;
+        }
+
+        public void ChangeScore(double score)
+        {
+            TotalScore += score;
+        }
+    }
+
+
+    public class Judge
+    {
+        private static int idContainer = 0;
+        public int Id { get; }
+        public Sportsman[] Sportsmens { get; }
+        public double[] Scores { get; }
+        public Judge(ref Sportsman[] sportmens)
+        {
+            Id = idContainer++;
+            Sportsmens = sportmens;
+            Random random = new Random();
+            Scores = new double[sportmens.Length];
+            
+            for (int i = 0; i < Scores.Length; i++)
+            {
+                Scores[i] = random.Next(0, 5) + random.NextDouble();
+                Sportsmens[i].ChangeScore(random.Next(0, 5) + random.NextDouble());
+            }
         }
     }
 }
