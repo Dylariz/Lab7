@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Number6
@@ -37,15 +36,19 @@ namespace Number6
                 "Дёмин",
                 "Сутулин"
             };
-            
+            var rand = new Random();
             List<Sportsmen> sportsmens = new List<Sportsmen>();
             for (int i = 0; i < n; i++)
             {
                 Jump jump1 = new Jump(surnames[new Random().Next(surnames.Length)], Support.GenerateArray(5, (0, 10)));
                 Thread.Sleep(50);
                 Jump jump2 = new Jump(surnames[new Random().Next(surnames.Length)], Support.GenerateArray(5, (0, 10)));
-                sportsmens.Add(new Sportsmen(new []{jump1, jump2}));
+                if (rand.Next(0, 11) > 8)
+                    sportsmens.Add(new DopingSportsmen(new []{jump1, jump2}));
+                else
+                    sportsmens.Add(new Sportsmen(new []{jump1, jump2}));
             }
+
             
             sportsmens.Sort((x, y) => y.TotalScore.CompareTo(x.TotalScore));
             int place = 1;
@@ -83,13 +86,30 @@ namespace Number6
         
         public Sportsmen(Jump[] jumps)
         {
-            Surname = jumps[0].Surname;
             Jumps = jumps;
+            UpdateFields();
+        }
+
+        public void UpdateFields()
+        {
+            Surname = Jumps[0].Surname;
             TotalScore = 0;
             foreach (var t in Jumps)
             {
                 TotalScore += t.TotalScore;
             }
+        }
+    }
+
+    public class DopingSportsmen : Sportsmen
+    {
+        public DopingSportsmen(Jump[] jumps) : base(jumps)
+        {
+            for (int i = 0; i < jumps.Length; i++)
+            {
+                jumps[i] = new Jump("Cheater: " + jumps[i].Surname, Support.GenerateArray(5, (7, 10)));
+            }
+            UpdateFields();
         }
     }
     

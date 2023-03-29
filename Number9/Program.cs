@@ -60,14 +60,23 @@ namespace Number9
         }
     }
 
-    public class Sportsman
+    public class Human
+    {
+        public int Id { get; internal set; }
+        public string Surname { get; internal set; }
+
+        public Human(string surname)
+        {
+            Surname = surname;
+        }
+    }
+
+    public class Sportsman : Human
     {
         private static int idContainer = 0;
-        public int Id { get; }
-        public string Surname { get; }
         public double TotalScore { get; private set; }
 
-        public Sportsman(string surname)
+        public Sportsman(string surname) : base(surname)
         {
             Id = idContainer++;
             Surname = surname;
@@ -81,13 +90,12 @@ namespace Number9
     }
 
 
-    public class Judge
+    public class Judge : Human
     {
         private static int idContainer = 0;
-        public int Id { get; }
         public Sportsman[] Sportsmens { get; }
         public double[] Scores { get; }
-        public Judge(ref Sportsman[] sportmens)
+        public Judge(ref Sportsman[] sportmens) : base($"Mr. #{idContainer}")
         {
             Id = idContainer++;
             Sportsmens = sportmens;
